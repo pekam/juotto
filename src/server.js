@@ -26,16 +26,20 @@ const joinRoom = (socket, username, roomId) => {
 };
 
 const updateRoom = (roomId) => {
-  io.to(roomId).emit("update", {
-    roomId,
-    clients: getClientsInRoom(roomId),
-  });
+  if (hasRoom(roomId)) {
+    io.to(roomId).emit("update", {
+      roomId,
+      clients: getClientsInRoom(roomId),
+    });
+  }
 };
 
 const getClientsInRoom = (roomId) =>
   Object.getOwnPropertyNames(io.sockets.adapter.rooms[roomId].sockets)
     .map(getSocketById)
     .map(({ username, id }) => ({ username, id }));
+
+const hasRoom = (roomId) => !!io.sockets.adapter.rooms[roomId];
 
 const getSocketById = (socketId) => io.sockets.sockets[socketId];
 
