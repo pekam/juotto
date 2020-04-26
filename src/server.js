@@ -16,6 +16,14 @@ io.on("connection", (socket) => {
     .on("joinRoom", (username, roomId) => {
       console.log("joinRoom");
       joinRoom(socket, username, roomId);
+    })
+    .on("startGame", () => {
+      const clientsInRoom = getClientsInRoom(socket.roomId);
+      if (clientsInRoom.length < 2 || clientsInRoom[0].id !== socket.id) {
+        // Invalid
+        return;
+      }
+      updateRoom(socket.roomId, { gameStarted: true });
     });
 });
 
@@ -25,11 +33,12 @@ const joinRoom = (socket, username, roomId) => {
   socket.join(roomId, () => updateRoom(roomId));
 };
 
-const updateRoom = (roomId) => {
+const updateRoom = (roomId, props = {}) => {
   if (hasRoom(roomId)) {
     io.to(roomId).emit("update", {
       roomId,
       clients: getClientsInRoom(roomId),
+      ...props,
     });
   }
 };

@@ -31,7 +31,7 @@ class App extends React.Component {
   };
 
   startGame = () => {
-    console.log("Start game");
+    this.socket.emit("startGame");
   };
 
   render() {
