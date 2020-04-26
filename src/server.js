@@ -1,3 +1,4 @@
+const Game = require("./game.js");
 const app = require("express")();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
@@ -23,6 +24,7 @@ io.on("connection", (socket) => {
         // Invalid
         return;
       }
+      const game = new Game();
       updateRoom(socket.roomId, { gameStarted: true });
     });
 });
