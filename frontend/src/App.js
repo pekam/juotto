@@ -1,11 +1,7 @@
-import React from 'react';
+import React from "react";
 
 function App() {
-  return (
-    <div>
-        Juotto
-    </div>
-  );
+  return <div>Juotto</div>;
 }
 
 export default App;
