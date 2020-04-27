@@ -8,9 +8,13 @@ export default (props) => (
       <Hand key={client.id} client={client} />
     ))}
     <Card card={props.activeCard} />
-    {props.action || ""}
+    {props.action ? actionToText(props.action) : ""}
     <div onClick={props.onReadyClick} hidden={props.ready}>
       Click when ready
     </div>
   </div>
 );
+
+const actionToText = ({ type, n }) => {
+  return `${type === "drink" ? "Juo" : "Määrää"} ${n}`;
+};

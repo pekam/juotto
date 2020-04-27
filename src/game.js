@@ -3,14 +3,14 @@ const { initDeck, drawHand } = require("./deck-utils.js");
 const CARDS_PER_HAND = 3;
 
 const ACTIONS = [
-  "DRINK_1",
-  "DRINK_2",
-  "DRINK_3",
-  "DECIDE_1",
-  "DECIDE_2",
-  "DECIDE_3",
+  { type: "drink", n: "1" },
+  { type: "drink", n: "2" },
+  { type: "drink", n: "3" },
+  { type: "decide", n: "1" },
+  { type: "decide", n: "2" },
+  { type: "decide", n: "3" },
 ];
-const FINAL_ACTION = "DRINK_5";
+const FINAL_ACTION = { type: "drink", n: "5" };
 
 module.exports = {
   initGame(clients) {
