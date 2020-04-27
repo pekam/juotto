@@ -37,6 +37,10 @@ class App extends React.Component {
     this.socket.emit("startGame");
   };
 
+  setReady = () => {
+    this.socket.emit("ready");
+  };
+
   render() {
     return (
       <div>
@@ -49,9 +53,19 @@ class App extends React.Component {
             startGame={this.startGame}
           />
         ) : (
-          <GameView clients={this.state.game.clients} />
+          <GameView
+            clients={this.state.game.clients}
+            onReadyClick={this.setReady}
+            ready={this.me.ready}
+          />
         )}
       </div>
+    );
+  }
+
+  get me() {
+    return this.state.game?.clients.find(
+      (client) => client.id === this.socket.id
     );
   }
 }

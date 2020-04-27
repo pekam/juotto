@@ -1,4 +1,4 @@
-const { initGame } = require("./game.js");
+const { initGame, setReady } = require("./game.js");
 const app = require("express")();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
@@ -25,6 +25,11 @@ io.on("connection", (socket) => {
         return;
       }
       const game = initGame(clientsInRoom);
+      getRoom(socket.roomId).game = game;
+      updateRoom(socket.roomId, { game });
+    })
+    .on("ready", () => {
+      const game = setReady(socket.id, getRoom(socket.roomId).game);
       getRoom(socket.roomId).game = game;
       updateRoom(socket.roomId, { game });
     });

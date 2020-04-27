@@ -17,4 +17,16 @@ module.exports = {
       { deck: initialDeck, clients: [] }
     );
   },
+  setReady(clientId, game) {
+    const clients = game.clients.map((client) =>
+      client.id === clientId ? { ...client, ready: true } : client
+    );
+    const allReady = clients.every((client) => client.ready);
+    return {
+      ...game,
+      clients: allReady
+        ? clients.map((client) => ({ ...client, ready: false }))
+        : clients,
+    };
+  },
 };
