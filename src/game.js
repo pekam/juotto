@@ -22,11 +22,26 @@ module.exports = {
       client.id === clientId ? { ...client, ready: true } : client
     );
     const allReady = clients.every((client) => client.ready);
-    return {
-      ...game,
-      clients: allReady
-        ? clients.map((client) => ({ ...client, ready: false }))
-        : clients,
-    };
+    if (allReady && game.deck.length) {
+      return drawCard(game);
+    } else {
+      return {
+        ...game,
+        clients,
+      };
+    }
   },
+};
+
+const drawCard = (game) => {
+  return {
+    ...game,
+    activeCard: game.deck[0],
+    deck: game.deck.slice(1, game.deck.length),
+    clients: clearReady(game.clients),
+  };
+};
+
+const clearReady = (clients) => {
+  return clients.map((client) => ({ ...client, ready: false }));
 };
