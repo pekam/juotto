@@ -3,6 +3,7 @@ import socketIOClient from "socket.io-client";
 import Home from "./Home";
 import Lobby from "./Lobby";
 import Hand from "./Hand";
+import GameView from "./GameView";
 
 // Keep in sync with server.js
 const ENDPOINT = "http://localhost:3001";
@@ -48,13 +49,7 @@ class App extends React.Component {
             startGame={this.startGame}
           />
         ) : (
-          <div>
-            <Hand
-              client={this.state.game.clients.find(
-                (client) => client.id === this.socket.id
-              )}
-            />
-          </div>
+          <GameView clients={this.state.game.clients} />
         )}
       </div>
     );
