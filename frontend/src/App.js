@@ -2,6 +2,7 @@ import React from "react";
 import socketIOClient from "socket.io-client";
 import Home from "./Home";
 import Lobby from "./Lobby";
+import Card from "./Card";
 
 // Keep in sync with server.js
 const ENDPOINT = "http://localhost:3001";
@@ -11,7 +12,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       joined: false,
-      gameStarted: false,
+      game: null,
       clients: [],
       roomId: "",
     };
@@ -27,6 +28,7 @@ class App extends React.Component {
   };
 
   update = (serverState) => {
+    console.log(serverState);
     this.setState({ joined: true, ...serverState });
   };
 
@@ -39,14 +41,21 @@ class App extends React.Component {
       <div>
         {!this.state.joined ? (
           <Home joinRoom={this.joinRoom} />
-        ) : !this.state.gameStarted ? (
+        ) : !this.state.game ? (
           <Lobby
             {...this.state}
             socketId={this.socket.id}
             startGame={this.startGame}
           />
         ) : (
-          "game started"
+          <div>
+            {this.state.game.clients
+              .find((c) => c.id === this.socket.id)
+              .hand.map((card) => (
+                <Card card={card} />
+              ))}
+            ;
+          </div>
         )}
       </div>
     );

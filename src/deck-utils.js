@@ -10,4 +10,11 @@ module.exports = {
         .sort(() => Math.random() - 0.5)
     );
   },
+
+  drawHand: (deck, numOfCards) => {
+    return {
+      hand: deck.slice(0, numOfCards),
+      deck: deck.filter((_, i) => i >= numOfCards),
+    };
+  },
 };

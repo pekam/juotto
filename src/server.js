@@ -1,4 +1,4 @@
-const Game = require("./game.js");
+const { initGame } = require("./game.js");
 const app = require("express")();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
@@ -24,8 +24,9 @@ io.on("connection", (socket) => {
         // Invalid
         return;
       }
-      const game = new Game();
-      updateRoom(socket.roomId, { gameStarted: true });
+      const game = initGame(clientsInRoom);
+      getRoom(socket.roomId).game = game;
+      updateRoom(socket.roomId, { game });
     });
 });
 
@@ -46,11 +47,13 @@ const updateRoom = (roomId, props = {}) => {
 };
 
 const getClientsInRoom = (roomId) =>
-  Object.getOwnPropertyNames(io.sockets.adapter.rooms[roomId].sockets)
+  Object.getOwnPropertyNames(getRoom(roomId).sockets)
     .map(getSocketById)
     .map(({ username, id }) => ({ username, id }));
 
-const hasRoom = (roomId) => !!io.sockets.adapter.rooms[roomId];
+const hasRoom = (roomId) => !!getRoom(roomId);
+
+const getRoom = (roomId) => io.sockets.adapter.rooms[roomId];
 
 const getSocketById = (socketId) => io.sockets.sockets[socketId];
 
