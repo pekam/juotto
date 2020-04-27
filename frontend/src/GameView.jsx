@@ -8,6 +8,7 @@ export default (props) => (
       <Hand key={client.id} client={client} />
     ))}
     <Card card={props.activeCard} />
+    {props.action || ""}
     <div onClick={props.onReadyClick} hidden={props.ready}>
       Click when ready
     </div>
