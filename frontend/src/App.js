@@ -2,7 +2,7 @@ import React from "react";
 import socketIOClient from "socket.io-client";
 import Home from "./Home";
 import Lobby from "./Lobby";
-import Card from "./Card";
+import Hand from "./Hand";
 
 // Keep in sync with server.js
 const ENDPOINT = "http://localhost:3001";
@@ -49,12 +49,11 @@ class App extends React.Component {
           />
         ) : (
           <div>
-            {this.state.game.clients
-              .find((c) => c.id === this.socket.id)
-              .hand.map((card) => (
-                <Card card={card} />
-              ))}
-            ;
+            <Hand
+              client={this.state.game.clients.find(
+                (client) => client.id === this.socket.id
+              )}
+            />
           </div>
         )}
       </div>
