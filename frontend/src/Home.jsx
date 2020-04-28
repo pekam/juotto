@@ -17,6 +17,7 @@ export default class extends React.Component {
   render() {
     return (
       <div>
+        <h1>Juotto</h1>
         <form onSubmit={this.handleSubmit}>
           <label>
             Username:
@@ -24,13 +25,17 @@ export default class extends React.Component {
               onChange={(e) => this.setState({ username: e.target.value })}
             />
           </label>
+          <br />
           <label>
             Room id:
             <input
               onChange={(e) => this.setState({ roomId: e.target.value })}
             />
           </label>
-          <button type="submit">Join room</button>
+          <br />
+          <button className="primaryButton" type="submit">
+            Join room
+          </button>
         </form>
       </div>
     );
