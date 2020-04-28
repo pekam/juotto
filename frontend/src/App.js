@@ -16,8 +16,9 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.socket = socketIOClient();
-    this.socket.on("update", this.update);
+    this.socket = socketIOClient()
+      .on("update", this.update)
+      .on("errorMsg", (msg) => alert(msg));
   }
 
   joinRoom = (username, roomId) => {

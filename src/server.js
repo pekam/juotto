@@ -20,7 +20,15 @@ io.on("connection", (socket) => {
     })
     .on("joinRoom", (username, roomId) => {
       console.log("joinRoom");
-      joinRoom(socket, username, roomId);
+      if (
+        hasRoom(roomId) &&
+        (getRoom(roomId).game || getClientsInRoom(roomId).length > 10)
+      ) {
+        console.log("room not available");
+        socket.emit("errorMsg", "The room is not available.");
+      } else {
+        joinRoom(socket, username, roomId);
+      }
     })
     .on("startGame", () => {
       const clientsInRoom = getClientsInRoom(socket.roomId);
