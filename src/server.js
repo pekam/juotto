@@ -1,10 +1,14 @@
 const { initGame, setReady } = require("./game.js");
-const app = require("express")();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
+const express = require("express");
+const path = require("path");
 
-// Keep in sync with frontend/src/App.js
-const port = 3001;
+const PORT = process.env.PORT || 8080;
+
+const server = express()
+  .use(express.static(path.join(__dirname, "..", "frontend", "build")))
+  .listen(PORT, console.log(`listening on ${PORT}`));
+
+const io = require("socket.io")(server);
 
 io.on("connection", (socket) => {
   console.log("connection");
@@ -61,7 +65,3 @@ const hasRoom = (roomId) => !!getRoom(roomId);
 const getRoom = (roomId) => io.sockets.adapter.rooms[roomId];
 
 const getSocketById = (socketId) => io.sockets.sockets[socketId];
-
-http.listen(port, () => {
-  console.log(`listening on *:${port}`);
-});
