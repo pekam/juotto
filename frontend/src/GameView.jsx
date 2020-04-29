@@ -7,10 +7,10 @@ export default (props) => {
   return (
     <div className="gameView">
       {props.clients.map((client) => (
-        <Hand key={client.id} client={client} />
+        <Hand key={client.id} client={client} activeCard={props.activeCard} />
       ))}
       <div className="commandCardArea">
-        <Card card={props.activeCard} />
+        <Card card={props.activeCard} highlight />
         <span>{props.action ? actionToText(props.action) : ""}</span>
       </div>
       <button
