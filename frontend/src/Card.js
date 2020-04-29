@@ -5,6 +5,10 @@ export default ({ card, highlight }) => {
     ? require(`./cards/${card.rank}${card.suite}.svg`)
     : require(`./cards/RED_BACK.svg`);
   return (
-    <img className={"card" + (highlight ? " highlight" : "")} src={image} />
+    <img
+      alt={"Card" + (card ? ` ${card.suite}${card.rank}` : "")}
+      className={"card" + (highlight ? " highlight" : "")}
+      src={image}
+    />
   );
 };
