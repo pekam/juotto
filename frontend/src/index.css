@@ -21,7 +21,11 @@ h1, h2, h3, h4, h5 {
 }
 
 input {
-  margin: 0 0 var(--spacing-s) var(--spacing-s);
+  display: block;
+  padding: 3px;
+  font-size: 18px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
 }
 
 .gameView {
