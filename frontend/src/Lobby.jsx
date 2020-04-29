@@ -13,14 +13,12 @@ export default ({ clients, roomId, socketId, startGame }) => {
       </ul>
       <button
         className="primaryButton"
-        disabled={!firstInLobby || clients.length < 2}
+        disabled={!firstInLobby}
         onClick={startGame}
       >
         Start
       </button>
-      <div>
-        (the first in lobby can start the game when there's at least 2 players)
-      </div>
+      <div>(only the first player in the lobby can start the game)</div>
     </div>
   );
 };

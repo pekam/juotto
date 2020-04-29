@@ -45,7 +45,7 @@ io.on("connection", (socket) => {
     })
     .on("startGame", () => {
       const clientsInRoom = getClientsInRoom(socket.roomId);
-      if (clientsInRoom.length < 2 || clientsInRoom[0].id !== socket.id) {
+      if (clientsInRoom[0].id !== socket.id) {
         // Invalid
         return;
       }
