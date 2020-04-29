@@ -1,4 +1,4 @@
-const { initGame, setReady } = require("./game.js");
+const { initGame, setReady, removeClient } = require("./game.js");
 const express = require("express");
 const path = require("path");
 
@@ -18,7 +18,17 @@ io.on("connection", (socket) => {
   socket
     .on("disconnect", () => {
       console.log("disconnect");
-      socket.roomId && updateRoom(socket.roomId);
+      if (!hasRoom(socket.roomId)) {
+        return;
+      }
+      const room = getRoom(socket.roomId);
+      if (room.game) {
+        const game = removeClient(socket.id, room.game);
+        room.game = game;
+        updateRoom(socket.roomId, { game });
+      } else {
+        updateRoom(socket.roomId);
+      }
     })
     .on("joinRoom", (username, roomId) => {
       console.log("joinRoom");

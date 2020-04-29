@@ -41,6 +41,10 @@ module.exports = {
       };
     }
   },
+  removeClient(clientId, game) {
+    const clients = game.clients.filter((client) => client.id !== clientId);
+    return { ...game, clients };
+  },
 };
 
 const drawCard = (game) => {
