@@ -51,9 +51,7 @@ class App extends React.Component {
           />
         ) : (
           <GameView
-            clients={this.state.game.clients}
-            activeCard={this.state.game.activeCard}
-            action={this.state.game.action}
+            {...this.state.game}
             onReadyClick={this.setReady}
             ready={this.me.ready}
           />
