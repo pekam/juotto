@@ -4,6 +4,8 @@ const path = require("path");
 
 const PORT = process.env.PORT || 8080;
 
+const MAX_CLIENTS_IN_ROOM = 10;
+
 const server = express()
   .use(express.static(path.join(__dirname, "..", "frontend", "build")))
   .listen(PORT, console.log(`listening on ${PORT}`));
@@ -20,12 +22,13 @@ io.on("connection", (socket) => {
     })
     .on("joinRoom", (username, roomId) => {
       console.log("joinRoom");
-      if (
-        hasRoom(roomId) &&
-        (getRoom(roomId).game || getClientsInRoom(roomId).length > 10)
-      ) {
-        console.log("room not available");
-        socket.emit("errorMsg", "The room is not available.");
+      if (hasRoom(roomId) && getRoom(roomId).game) {
+        sendError(
+          socket,
+          "Unable to join. There's already an active game in this room."
+        );
+      } else if (getClientsInRoom(roomId).length >= MAX_CLIENTS_IN_ROOM) {
+        sendError(socket, "Unable to join. The lobby is full.");
       } else {
         joinRoom(socket, username, roomId);
       }
@@ -63,10 +66,14 @@ const updateRoom = (roomId, props = {}) => {
   }
 };
 
+const sendError = (socket, errorMsg) => socket.emit("errorMsg", errorMsg);
+
 const getClientsInRoom = (roomId) =>
-  Object.getOwnPropertyNames(getRoom(roomId).sockets)
-    .map(getSocketById)
-    .map(({ username, id }) => ({ username, id }));
+  hasRoom(roomId)
+    ? Object.getOwnPropertyNames(getRoom(roomId).sockets)
+        .map(getSocketById)
+        .map(({ username, id }) => ({ username, id }))
+    : [];
 
 const hasRoom = (roomId) => !!getRoom(roomId);
 
