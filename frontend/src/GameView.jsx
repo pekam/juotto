@@ -21,7 +21,7 @@ export default (props) => {
         {gameOver
           ? "Game over"
           : props.ready
-          ? "Waiting for others..."
+          ? "Waiting for other juottoers..."
           : "Click when ready"}
       </button>
     </div>

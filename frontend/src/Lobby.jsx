@@ -16,9 +16,11 @@ export default ({ clients, roomId, socketId, startGame }) => {
         disabled={!firstInLobby}
         onClick={startGame}
       >
-        Start
+        Start the juottoing
       </button>
-      <div>(only the first player in the lobby can start the game)</div>
+      <div>
+        (only the first player in the lobby can start the game of Juotto)
+      </div>
     </div>
   );
 };

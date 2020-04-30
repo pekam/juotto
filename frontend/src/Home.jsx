@@ -18,6 +18,7 @@ export default class extends React.Component {
     return (
       <div>
         <h1>Juotto</h1>
+        <h3>The classic juoma game is now online!</h3>
         <form onSubmit={this.handleSubmit}>
           <label>
             Username:
