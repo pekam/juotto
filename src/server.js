@@ -1,4 +1,4 @@
-const { initGame, setReady, removeClient } = require("./game.js");
+const { initGame, setReady } = require("./game.js");
 const express = require("express");
 const path = require("path");
 
@@ -18,74 +18,76 @@ io.on("connection", (socket) => {
   socket
     .on("disconnect", () => {
       console.log("disconnect");
-      if (!hasRoom(socket.roomId)) {
-        return;
-      }
-      const room = getRoom(socket.roomId);
-      if (room.game) {
-        const game = removeClient(socket.id, room.game);
-        room.game = game;
-        updateRoom(socket.roomId, { game });
-      } else {
-        updateRoom(socket.roomId);
+      const state = getRoomState(socket.roomId);
+      if (state) {
+        updateRoom(socket.roomId, {
+          ...state,
+          clients: state.clients.filter((client) => client.id !== socket.id),
+        });
       }
     })
     .on("joinRoom", (username, roomId) => {
       console.log("joinRoom");
-      if (hasRoom(roomId) && getRoom(roomId).game) {
+      const state = getRoomState(roomId);
+      if (state && state.gameStarted) {
         sendError(
           socket,
           "Unable to join. There's already an active game in this room."
         );
-      } else if (getClientsInRoom(roomId).length >= MAX_CLIENTS_IN_ROOM) {
+      } else if (state && state.clients.length >= MAX_CLIENTS_IN_ROOM) {
         sendError(socket, "Unable to join. The lobby is full.");
       } else {
         joinRoom(socket, username, roomId);
       }
     })
     .on("startGame", () => {
-      const clientsInRoom = getClientsInRoom(socket.roomId);
-      if (clientsInRoom[0].id !== socket.id) {
+      const state = getRoomState(socket.roomId);
+      if (!state) {
+        return;
+      }
+      if (state.clients[0].id !== socket.id) {
         // Invalid
         return;
       }
-      const game = initGame(clientsInRoom);
-      getRoom(socket.roomId).game = game;
-      updateRoom(socket.roomId, { game });
+      const nextState = initGame(state);
+      updateRoom(socket.roomId, { ...nextState, gameStarted: true });
     })
     .on("ready", () => {
-      const game = setReady(socket.id, getRoom(socket.roomId).game);
-      getRoom(socket.roomId).game = game;
-      updateRoom(socket.roomId, { game });
+      const state = getRoomState(socket.roomId);
+      if (!state) {
+        return;
+      }
+      const nextState = setReady(socket.id, state);
+      updateRoom(socket.roomId, nextState);
     });
 });
 
 const joinRoom = (socket, username, roomId) => {
-  socket.username = username;
   socket.roomId = roomId;
-  socket.join(roomId, () => updateRoom(roomId));
+  const client = { id: socket.id, username };
+  const state = getRoomState(roomId);
+
+  const nextState = !state
+    ? { roomId, clients: [client] } // initial state
+    : { ...state, clients: [...state.clients, client] };
+
+  socket.join(roomId, () => updateRoom(roomId, nextState));
 };
 
-const updateRoom = (roomId, props = {}) => {
-  if (hasRoom(roomId)) {
-    io.to(roomId).emit("update", {
-      roomId,
-      clients: getClientsInRoom(roomId),
-      ...props,
-    });
+const updateRoom = (roomId, nextState) => {
+  const room = getRoom(roomId);
+  if (room) {
+    room.state = nextState;
+    io.to(roomId).emit("update", room.state);
   }
 };
 
 const sendError = (socket, errorMsg) => socket.emit("errorMsg", errorMsg);
 
-const getClientsInRoom = (roomId) =>
-  hasRoom(roomId)
-    ? Object.getOwnPropertyNames(getRoom(roomId).sockets)
-        .map(getSocketById)
-        .map(({ username, id }) => ({ username, id }))
-    : [];
-
-const hasRoom = (roomId) => !!getRoom(roomId);
+const getRoomState = (roomId) => {
+  const room = getRoom(roomId);
+  return room && room.state;
+};
 
 const getRoom = (roomId) => io.sockets.adapter.rooms[roomId];
 

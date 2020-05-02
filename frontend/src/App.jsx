@@ -7,11 +7,7 @@ import GameView from "./GameView";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      joined: false,
-      game: null,
-      clients: [],
-    };
+    this.state = {};
   }
 
   componentDidMount() {
@@ -26,7 +22,7 @@ class App extends React.Component {
 
   update = (serverState) => {
     console.log(serverState);
-    this.setState({ joined: true, ...serverState });
+    this.setState(serverState);
   };
 
   startGame = () => {
@@ -40,9 +36,9 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        {!this.state.joined ? (
+        {!this.isInRoom ? (
           <Home joinRoom={this.joinRoom} />
-        ) : !this.state.game ? (
+        ) : !this.state.gameStarted ? (
           <Lobby
             {...this.state}
             socketId={this.socket.id}
@@ -50,7 +46,7 @@ class App extends React.Component {
           />
         ) : (
           <GameView
-            {...this.state.game}
+            {...this.state}
             onReadyClick={this.setReady}
             ready={this.me.ready}
           />
@@ -59,10 +55,12 @@ class App extends React.Component {
     );
   }
 
+  get isInRoom() {
+    return !!this.state.clients;
+  }
+
   get me() {
-    return this.state.game?.clients.find(
-      (client) => client.id === this.socket.id
-    );
+    return this.state.clients?.find((client) => client.id === this.socket.id);
   }
 }
 

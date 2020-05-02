@@ -13,10 +13,10 @@ const ACTIONS = [
 const FINAL_ACTION = { type: "drink", n: "5" };
 
 module.exports = {
-  initGame(clients) {
+  initGame(state) {
     const initialDeck = initDeck();
 
-    return clients.reduce(
+    const { deck, clients } = state.clients.reduce(
       (acc, client) => {
         const { hand, deck } = drawHand(acc.deck, CARDS_PER_HAND);
         return {
@@ -26,34 +26,31 @@ module.exports = {
       },
       { deck: initialDeck, clients: [] }
     );
+    return { ...state, deck, clients };
   },
-  setReady(clientId, game) {
-    const clients = game.clients.map((client) =>
+  setReady(clientId, state) {
+    const clients = state.clients.map((client) =>
       client.id === clientId ? { ...client, ready: true } : client
     );
     const allReady = clients.every((client) => client.ready);
-    if (allReady && game.deck.length) {
-      return drawCard(game);
+    if (allReady && state.deck.length) {
+      return drawCard(state);
     } else {
       return {
-        ...game,
+        ...state,
         clients,
       };
     }
   },
-  removeClient(clientId, game) {
-    const clients = game.clients.filter((client) => client.id !== clientId);
-    return { ...game, clients };
-  },
 };
 
-const drawCard = (game) => {
+const drawCard = (state) => {
   return {
-    ...game,
-    activeCard: game.deck[0],
-    action: getNextAction(game),
-    deck: game.deck.slice(1, game.deck.length),
-    clients: clearReady(game.clients),
+    ...state,
+    activeCard: state.deck[0],
+    action: getNextAction(state),
+    deck: state.deck.slice(1, state.deck.length),
+    clients: clearReady(state.clients),
   };
 };
 
@@ -61,11 +58,11 @@ const clearReady = (clients) => {
   return clients.map((client) => ({ ...client, ready: false }));
 };
 
-const getNextAction = (game) => {
-  if (game.deck.length === 1) {
+const getNextAction = (state) => {
+  if (state.deck.length === 1) {
     return FINAL_ACTION;
   } else {
-    const index = (ACTIONS.indexOf(game.action) + 1) % ACTIONS.length;
+    const index = (ACTIONS.indexOf(state.action) + 1) % ACTIONS.length;
     return ACTIONS[index];
   }
 };
