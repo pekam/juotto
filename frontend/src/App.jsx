@@ -11,7 +11,6 @@ class App extends React.Component {
       joined: false,
       game: null,
       clients: [],
-      roomId: "",
     };
   }
 
