@@ -7,6 +7,9 @@ const PORT = process.env.PORT || 8080;
 const MAX_CLIENTS_IN_ROOM = 10;
 
 const server = express()
+  // Serve also static resources in production.
+  // While developing, it's recommended to run the
+  // dev server from the frontend sub-project instead.
   .use(express.static(path.join(__dirname, "..", "frontend", "build")))
   .listen(PORT, console.log(`listening on ${PORT}`));
 

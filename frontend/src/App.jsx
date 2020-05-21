@@ -11,7 +11,9 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.socket = socketIOClient()
+    // Remove the parameter of socketIOClient()
+    // for production build
+    this.socket = socketIOClient("localhost:8080")
       .on("update", this.update)
       .on("errorMsg", (msg) => alert(msg));
   }
